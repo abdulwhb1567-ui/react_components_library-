@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function Modal({ open, onClose, title, children }) {
+export default function Modal({ open, onClose, title, children, type = 'center' }) {
   if (!open) return null
 
-  const overlayStyle = {
+  const overlayBase = {
     position: 'fixed',
     inset: 0,
     background: 'rgba(0,0,0,0.4)',
@@ -13,13 +13,34 @@ export default function Modal({ open, onClose, title, children }) {
     zIndex: 1000
   }
 
-  const modalStyle = {
+  const modalBase = {
     background: 'white',
     borderRadius: 8,
     padding: 20,
     minWidth: 320,
     maxWidth: '90%'
   }
+
+  const types = {
+    center: {
+      overlay: overlayBase,
+      modal: modalBase
+    },
+    drawer: {
+      overlay: { ...overlayBase, alignItems: 'flex-start', justifyContent: 'flex-end' },
+      modal: { ...modalBase, height: '100%', width: 360, borderRadius: 0 }
+    },
+    fullscreen: {
+      overlay: overlayBase,
+      modal: { ...modalBase, width: '100%', height: '100%', borderRadius: 0, padding: 24 }
+    },
+    bottom: {
+      overlay: { ...overlayBase, alignItems: 'flex-end', justifyContent: 'center' },
+      modal: { ...modalBase, width: '100%', borderRadius: '12px 12px 0 0' }
+    }
+  }
+
+  const chosen = types[type] || types.center
 
   const closeBtn = {
     position: 'absolute',
@@ -32,9 +53,9 @@ export default function Modal({ open, onClose, title, children }) {
   }
 
   return (
-    <div style={overlayStyle} role="dialog" aria-modal="true">
+    <div style={chosen.overlay} role="dialog" aria-modal="true">
       <div style={{ position: 'relative' }}>
-        <div style={modalStyle}>
+        <div style={chosen.modal}>
           {title && <h2 style={{ marginTop: 0 }}>{title}</h2>}
           <div>{children}</div>
         </div>
